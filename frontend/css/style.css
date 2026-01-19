@@ -1,0 +1,261 @@
+/* Основные стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Кнопки */
+.btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background: #4a6fa5;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.btn:hover {
+    background: #3a5a80;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.btn-secondary {
+    background: #7f8c8d;
+}
+
+.btn-secondary:hover {
+    background: #6c7b7d;
+}
+
+/* Карточки площадок */
+.venues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    margin: 30px 0;
+}
+
+.venue-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+}
+
+.venue-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.venue-name {
+    color: #2c3e50;
+    font-size: 1.3em;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.venue-info {
+    color: #7f8c8d;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+
+/* Информационные блоки */
+.info-box {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin: 30px 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+    border-left: 4px solid #4a6fa5;
+}
+
+.info-box h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+/* Утилиты */
+.text-center {
+    text-align: center;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .venues-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .hero-title {
+        font-size: 2em;
+    }
+    
+    .quick-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .map-container {
+        height: 400px;
+    }
+    
+    .detail-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Кастомные маркеры карты */
+.custom-marker {
+    background: none;
+    border: none;
+}
+
+/* Стили для попапов карты */
+.leaflet-popup-content {
+    font-family: inherit;
+    line-height: 1.4;
+}
+
+.leaflet-popup-content h3 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+}
+
+.leaflet-popup-content a {
+    color: #4a6fa5;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.leaflet-popup-content a:hover {
+    text-decoration: underline;
+}
+/* Стили для карты и маркеров */
+
+/* Контейнер карты */
+.map-container {
+    position: relative;
+}
+
+/* Кастомные попапы */
+.venue-popup .leaflet-popup-content-wrapper {
+    border-radius: 10px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.venue-popup .leaflet-popup-tip {
+    background: #4a6fa5;
+}
+
+/* Анимация пульсации для подсвеченных маркеров */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+    }
+}
+
+/* Элементы управления на карте */
+.map-controls {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.map-search input {
+    border: 2px solid #e0e0e0;
+    transition: border-color 0.3s;
+}
+
+.map-search input:focus {
+    border-color: #4a6fa5;
+    outline: none;
+}
+
+.district-filter select {
+    border: 2px solid #e0e0e0;
+    transition: border-color 0.3s;
+}
+
+.district-filter select:focus {
+    border-color: #4a6fa5;
+    outline: none;
+}
+
+/* Адаптивность для элементов управления */
+@media (max-width: 768px) {
+    .map-controls {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    .map-search input {
+        width: 100% !important;
+    }
+    
+    .district-filter select {
+        width: 100% !important;
+    }
+}
