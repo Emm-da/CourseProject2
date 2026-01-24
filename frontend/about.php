@@ -1,12 +1,9 @@
 <?php
-// about.php - Страница "О проекте"
 $page_title = 'О проекте - Музыкальные площадки Москвы';
 require_once 'header.php';
 ?>
 
-<!-- Стили только для контента страницы -->
 <style>
-    /* Стили для страницы "О проекте" */
     .hero-section {
         background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(74, 111, 165, 0.9)), 
                     url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
@@ -33,7 +30,6 @@ require_once 'header.php';
         opacity: 0.9;
     }
     
-    /* Секции */
     .section {
         background: white;
         padding: 50px;
@@ -66,7 +62,6 @@ require_once 'header.php';
         color: #555;
     }
     
-    /* Цели проекта */
     .goals-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -100,7 +95,6 @@ require_once 'header.php';
         font-size: 1.3em;
     }
     
-    /* Статистика */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -128,7 +122,6 @@ require_once 'header.php';
         opacity: 0.9;
     }
     
-    /* Команда */
     .team-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -191,7 +184,6 @@ require_once 'header.php';
         margin-bottom: 15px;
     }
     
-    /* Технологии */
     .tech-grid {
         display: flex;
         flex-wrap: wrap;
@@ -220,7 +212,6 @@ require_once 'header.php';
         color: #4a6fa5;
     }
     
-    /* Призыв к действию */
     .cta-section {
         background: linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%);
         color: white;
@@ -264,7 +255,6 @@ require_once 'header.php';
         box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     }
     
-    /* Адаптивность */
     @media (max-width: 768px) {
         .hero-section {
             padding: 60px 20px;
@@ -289,7 +279,6 @@ require_once 'header.php';
         }
     }
     
-    /* Анимации */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
@@ -302,21 +291,18 @@ require_once 'header.php';
 
 <main>
     <div class="container">
-        <!-- Герой-секция -->
         <section class="hero-section fade-in">
             <h1>О проекте</h1>
             <p>Мы создаем единое информационное пространство для музыкантов, организаторов мероприятий и всех, кто ищет идеальную площадку для своего выступления в Москве</p>
             <a href="search.php" class="btn"><i class="fas fa-search"></i> Найти площадку</a>
         </section>
 
-        <!-- О проекте -->
         <section class="section fade-in">
             <h2><i class="fas fa-info-circle"></i> О проекте</h2>
             <p><strong>Музыкальные площадки Москвы</strong> — это инновационная платформа, созданная для упрощения поиска и бронирования музыкальных площадок столицы. Наш проект объединяет информацию о концертных площадках, террасах и открытых пространствах Москвы.</p>
             <p>Мы стремимся сделать процесс организации мероприятий максимально простым и прозрачным, предоставляя полную информацию о площадках, их техническом оснащении и доступности.</p>
         </section>
 
-        <!-- Наши цели -->
         <section class="section fade-in">
             <h2><i class="fas fa-bullseye"></i> Наши цели</h2>
             <div class="goals-grid">
@@ -338,7 +324,6 @@ require_once 'header.php';
             </div>
         </section>
 
-        <!-- Статистика -->
         <section class="section fade-in">
             <h2><i class="fas fa-chart-line"></i> В цифрах</h2>
             <div class="stats-grid">
@@ -361,35 +346,21 @@ require_once 'header.php';
             </div>
         </section>
 
-        <!-- Технологии -->
         <section class="section fade-in">
             <h2><i class="fas fa-code"></i> Технологии</h2>
             <p>Наш проект построен на современных технологиях, обеспечивающих быстродействие, безопасность и удобство использования:</p>
             <div class="tech-grid">
                 <div class="tech-item">
                     <i class="fab fa-php"></i>
-                    <span>PHP 8+</span>
+                    <span>PHP</span>
                 </div>
                 <div class="tech-item">
                     <i class="fas fa-database"></i>
                     <span>MySQL</span>
-                </div>
-                <div class="tech-item">
-                    <i class="fab fa-js"></i>
-                    <span>JavaScript</span>
-                </div>
-                <div class="tech-item">
-                    <i class="fab fa-html5"></i>
-                    <span>HTML5 & CSS3</span>
-                </div>
-                <div class="tech-item">
-                    <i class="fab fa-font-awesome"></i>
-                    <span>Font Awesome</span>
-                </div>
+                </div>    
             </div>
         </section>
-
-        <!-- Команда -->
+        
         <section class="section fade-in">
             <h2><i class="fas fa-users"></i> Команда проекта</h2>
             <p>Над проектом работает человек, который любит музыку и технологии:</p>
@@ -411,7 +382,6 @@ require_once 'header.php';
             </div>
         </section>
 
-        <!-- Призыв к действию -->
         <section class="cta-section fade-in">
             <h2>Готовы найти идеальную площадку?</h2>
             <p>Начните поиск прямо сейчас и найдите площадку, которая подходит именно вам. Это бесплатно и займет всего несколько минут!</p>
@@ -423,7 +393,6 @@ require_once 'header.php';
 <?php require_once 'footer.php'; ?>
 
 <script>
-    // Анимация при прокрутке
     document.addEventListener('DOMContentLoaded', function() {
         const observerOptions = {
             threshold: 0.1,
@@ -438,12 +407,10 @@ require_once 'header.php';
             });
         }, observerOptions);
 
-        // Наблюдаем за всеми секциями
         document.querySelectorAll('.section').forEach(section => {
             observer.observe(section);
         });
 
-        // Плавная прокрутка для якорных ссылок
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();

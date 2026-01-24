@@ -2,7 +2,6 @@
 session_start();
 require_once 'config/db.php';
 
-// Если это AJAX запрос для добавления/удаления
 if (isset($_POST['ajax_action'])) {
     header('Content-Type: application/json');
     
@@ -21,7 +20,6 @@ if (isset($_POST['ajax_action'])) {
     
     try {
         if ($ajax_action === 'toggle') {
-            // Проверяем, есть ли уже в избранном
             $check_stmt = $pdo->prepare("
                 SELECT id FROM favorites 
                 WHERE user_id = ? AND venue_id = ?
@@ -29,7 +27,6 @@ if (isset($_POST['ajax_action'])) {
             $check_stmt->execute([$_SESSION['user_id'], $venue_id]);
             
             if ($check_stmt->fetch()) {
-                // Удаляем
                 $delete_stmt = $pdo->prepare("
                     DELETE FROM favorites 
                     WHERE user_id = ? AND venue_id = ?
@@ -42,7 +39,6 @@ if (isset($_POST['ajax_action'])) {
                     'message' => 'Удалено из избранного'
                 ]);
             } else {
-                // Добавляем
                 $insert_stmt = $pdo->prepare("
                     INSERT INTO favorites (user_id, venue_id, created_at) 
                     VALUES (?, ?, NOW())
@@ -69,7 +65,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Получаем избранные площадки пользователя
 $stmt = $pdo->prepare("
     SELECT v.* 
     FROM venues v
@@ -80,7 +75,6 @@ $stmt = $pdo->prepare("
 $stmt->execute([$_SESSION['user_id']]);
 $favorites = $stmt->fetchAll();
 
-// Обработка удаления из избранного
 if (isset($_GET['remove'])) {
     $venue_id = $_GET['remove'];
     
@@ -94,12 +88,10 @@ if (isset($_GET['remove'])) {
     exit();
 }
 
-// Обработка добавления в избранное (если пришло с AJAX)
 if (isset($_POST['add_to_favorites'])) {
     $venue_id = $_POST['venue_id'] ?? 0;
     
     if ($venue_id) {
-        // Проверяем, не добавлена ли уже площадка
         $check_stmt = $pdo->prepare("
             SELECT id FROM favorites 
             WHERE user_id = ? AND venue_id = ?
@@ -479,7 +471,6 @@ if (isset($_POST['add_to_favorites'])) {
                     <div class="favorites-grid">
                         <?php foreach ($favorites as $venue): ?>
                             <?php
-                            // Получаем главное фото площадки
                             $photo_stmt = $pdo->prepare("
                                 SELECT photo_url FROM venue_photos 
                                 WHERE venue_id = ? AND is_main = 1 
@@ -549,7 +540,6 @@ if (isset($_POST['add_to_favorites'])) {
     <?php require_once 'footer.php'; ?>
     
     <script>
-        // Показ уведомления об удалении
         <?php if (isset($_GET['removed'])): ?>
             document.addEventListener('DOMContentLoaded', function() {
                 const notification = document.createElement('div');
@@ -572,7 +562,6 @@ if (isset($_POST['add_to_favorites'])) {
             });
         <?php endif; ?>
         
-        // Анимация появления карточек
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.favorite-card');
             cards.forEach((card, index) => {

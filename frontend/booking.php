@@ -1,6 +1,5 @@
 <?php
 session_start();
-// ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ
 $host = 'localhost';
 $dbname = 'music_venues_db';
 $username = 'root';
@@ -20,7 +19,6 @@ if (!isset($_SESSION['user_id'])) {
 
 $venue_id = $_GET['id'] ?? 0;
 
-// Получаем информацию о площадке
 $stmt = $pdo->prepare("SELECT * FROM venues WHERE id = ?");
 $stmt->execute([$venue_id]);
 $venue = $stmt->fetch();
@@ -30,7 +28,6 @@ if (!$venue) {
     exit();
 }
 
-// Обработка формы бронирования
 $errors = [];
 $success = false;
 
@@ -43,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contact_phone = $_POST['contact_phone'] ?? '';
     $notes = $_POST['notes'] ?? '';
     
-    // Валидация
     if (empty($booking_date)) $errors[] = 'Выберите дату';
     if (empty($start_time)) $errors[] = 'Выберите время начала';
     if (empty($end_time)) $errors[] = 'Выберите время окончания';
@@ -57,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (empty($errors)) {
         try {
-            // Проверяем доступность
             $check_stmt = $pdo->prepare("
                 SELECT COUNT(*) FROM bookings 
                 WHERE venue_id = ? 
@@ -81,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($conflict_count > 0) {
                 $errors[] = 'На это время уже есть бронирование. Выберите другое время.';
             } else {
-                // Создаем бронирование
                 $insert_stmt = $pdo->prepare("
                     INSERT INTO bookings (user_id, venue_id, booking_date, start_time, end_time, 
                                          purpose, attendees_count, contact_phone, contact_email, notes, status)
@@ -298,7 +292,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <?php 
-    // Подключаем шапку
     $page_title = 'Бронирование - ' . htmlspecialchars($venue['name']);
     require_once 'header.php'; 
     ?>
@@ -430,7 +423,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php require_once 'footer.php'; ?>
     
     <script>
-        // Устанавливаем минимальную дату - сегодня
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date().toISOString().split('T')[0];
             const dateInput = document.getElementById('booking_date');
@@ -438,7 +430,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 dateInput.value = today;
             }
             
-            // Маска для телефона
             const phoneInput = document.getElementById('contact_phone');
             if (phoneInput) {
                 phoneInput.addEventListener('input', function(e) {

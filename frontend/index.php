@@ -1,9 +1,7 @@
 <?php
-// index.php - Главная страница с картой и статистикой
 header('Content-Type: text/html; charset=utf-8');
-require_once 'header.php'; // Подключаем общую шапку
+require_once 'header.php';
 
-// Подключаемся к базе данных
 $host = 'localhost';
 $dbname = 'music_venues_db';
 $username = 'root';
@@ -13,7 +11,6 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Берем ВСЕ площадки
     $stmt = $pdo->query("
         SELECT 
             id,
@@ -30,22 +27,18 @@ try {
     
     $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Собираем данные для карты
     $mapData = [];
-    $venueTypes = []; // Для сбора уникальных типов
+    $venueTypes = [];
     foreach ($venues as $venue) {
-        // Парсим координаты из geo_data
         $geo_data = $venue['geo_data'];
         $lat = 0;
         $lng = 0;
         
-        // Ищем координаты в формате: {coordinates=[37.673708995, 55.795444616], type=Point}
         if (preg_match('/coordinates=\[([\d\.]+),\s*([\d\.]+)\]/', $geo_data, $matches)) {
-            $lng = floatval($matches[1]); // первое число - долгота
-            $lat = floatval($matches[2]); // второе число - широта
+            $lng = floatval($matches[1]);
+            $lat = floatval($matches[2]);
         }
         
-        // Определяем тип площадки по названию
         $venueType = 'other';
         $lowerName = strtolower($venue['name']);
         if (strpos($lowerName, 'эстрада') !== false) {
@@ -56,12 +49,10 @@ try {
             $venueType = 'park';
         }
         
-        // Сохраняем тип для фильтра
         if (!in_array($venueType, $venueTypes)) {
             $venueTypes[] = $venueType;
         }
         
-        // Если нашли координаты - добавляем
         if ($lat != 0 && $lng != 0) {
             $mapData[] = [
                 'id' => $venue['id'],
@@ -77,15 +68,12 @@ try {
         }
     }
     
-    // Сортируем типы
     sort($venueTypes);
     
-    // Получаем статистику
     $totalVenues = $pdo->query("SELECT COUNT(*) FROM venues")->fetchColumn();
     $uniqueDistricts = $pdo->query("SELECT COUNT(DISTINCT district) FROM venues WHERE district IS NOT NULL")->fetchColumn();
     $withCoords = count($mapData);
     
-    // Получаем рекомендации (топ 3 площадки)
     $recommendationsStmt = $pdo->query("
         SELECT id, name, district, address, working_hours, balance_holder_phone 
         FROM venues 
@@ -94,7 +82,6 @@ try {
     ");
     $recommendations = $recommendationsStmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Получаем список районов
     $districtsStmt = $pdo->query("SELECT DISTINCT district FROM venues WHERE district IS NOT NULL ORDER BY district");
     $districts = $districtsStmt->fetchAll(PDO::FETCH_COLUMN);
     
@@ -103,10 +90,8 @@ try {
 }
 ?>
 
-<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-<!-- Стили только для главной страницы -->
 <style>
     body {
         margin: 0;
@@ -451,16 +436,13 @@ try {
 
 </head>
 <body>
-    <!-- Шапка уже подключена через header.php -->
     
     <main>
-        <!-- Герой-секция -->
         <section class="hero-section">
             <div class="container">
                 <h1 class="hero-title">🎵 Музыкальные площадки Москвы</h1>
                 <p class="hero-subtitle">Найдите идеальную площадку для вашего мероприятия среди <?php echo $totalVenues; ?>+ локаций в парках Москвы</p>
                 
-                <!-- Быстрая статистика -->
                 <div class="quick-stats">
                     <div class="stat-item">
                         <div class="stat-number"><?php echo $totalVenues; ?>+</div>
@@ -483,7 +465,6 @@ try {
         </section>
         
         <div class="container">
-            <!-- Быстрые действия -->
             <div class="quick-actions">
                 <a href="search.php" class="action-btn">
                     🔍 Поиск площадок
@@ -499,12 +480,10 @@ try {
                 </a>
             </div>
             
-            <!-- Карта -->
             <section id="map-section">
                 <h2 class="section-title">🗺️ Карта музыкальных площадок Москвы</h2>
                 <div class="map-container">
                     <div id="map"></div>
-                    <!-- Элементы управления картой -->
                     <div class="map-controls">
                         <div class="map-search">
                             <input type="text" id="mapSearch" class="search-input" placeholder="Поиск на карте...">
@@ -528,7 +507,6 @@ try {
                         </div>
                     </div>
                     
-                    <!-- Легенда карты -->
                     <div class="map-legend">
                         <div class="legend-title">Легенда карты:</div>
                         <div class="legend-item">
@@ -551,7 +529,6 @@ try {
                 </div>
             </section>
             
-            <!-- Функционал сайта -->
             <section>
                 <h2 class="section-title">✨ Что вы можете сделать</h2>
                 <div class="features-grid">
@@ -573,7 +550,6 @@ try {
                 </div>
             </section>
             
-            <!-- Рекомендации -->
             <?php if (!empty($recommendations)): ?>
             <section>
                 <h2 class="section-title">🔥 Популярные площадки</h2>
@@ -601,7 +577,6 @@ try {
             </section>
             <?php endif; ?>
             
-            <!-- Информация о данных -->
             <div class="info-box">
                 <h3>📊 О данных</h3>
                 <p>Используются открытые данные Правительства Москвы о музыкальных площадках в парках города. Всего в базе более <?php echo $totalVenues; ?> площадок с информацией о местоположении, графике работы и контактах.</p>
@@ -611,57 +586,46 @@ try {
     
 <?php require_once 'footer.php'; ?>
 
-    <!-- JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Данные из PHP
         const venuesData = <?php echo json_encode($mapData, JSON_UNESCAPED_UNICODE); ?>;
         let currentMarkers = [];
         
-        // Инициализация карты
         function initMap() {
-            // Москва: широта 55.7558, долгота 37.6173
             const map = L.map('map').setView([55.7558, 37.6173], 11);
             
-            // Добавляем слой карты
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
                 maxZoom: 19
             }).addTo(map);
             
-            // Загружаем данные о площадках
             loadVenuesToMap(map);
             
-            // Поиск на карте
             document.getElementById('mapSearch').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     searchOnMap(this.value, map);
                 }
             });
             
-            // Фильтр по району
             document.getElementById('districtFilter').addEventListener('change', function() {
                 applyFilters(map);
             });
             
-            // Фильтр по типу
             document.getElementById('typeFilter').addEventListener('change', function() {
                 applyFilters(map);
             });
         }
         
-        // Цвета для разных типов площадок
         const getVenueColor = (venueType) => {
             const colors = {
-                'estrada': '#e74c3c',   // Красный - эстрады
-                'stage': '#2ecc71',     // Зеленый - сцены
-                'park': '#3498db',      // Синий - парки
-                'other': '#9b59b6'      // Фиолетовый - остальные
+                'estrada': '#e74c3c',
+                'stage': '#2ecc71',
+                'park': '#3498db',
+                'other': '#9b59b6'
             };
             return colors[venueType] || '#9b59b6';
         };
         
-        // Русские названия типов
         const getVenueTypeName = (venueType) => {
             const names = {
                 'estrada': 'Эстрада',
@@ -672,38 +636,30 @@ try {
             return names[venueType] || 'Другое';
         };
         
-        // Загрузка площадок на карту
         function loadVenuesToMap(map, filters = {}) {
-            // Очищаем старые маркеры
             currentMarkers.forEach(marker => map.removeLayer(marker));
             currentMarkers = [];
             
-            // Фильтруем данные если нужно
             let filteredData = venuesData;
             
-            // Применяем фильтр по району
             if (filters.district) {
                 filteredData = filteredData.filter(venue => 
                     venue.district && venue.district.toLowerCase() === filters.district.toLowerCase()
                 );
             }
             
-            // Применяем фильтр по типу
             if (filters.type) {
                 filteredData = filteredData.filter(venue => venue.type === filters.type);
             }
             
             console.log('Отображаем площадок:', filteredData.length);
             
-            // Добавляем маркеры
             filteredData.forEach(venue => {
-                // Проверяем координаты
                 if (!venue.lat || !venue.lng) {
                     console.warn('Нет координат у площадки:', venue.name);
                     return;
                 }
                 
-                // Создаем иконку
                 const icon = L.divIcon({
                     className: 'custom-marker',
                     html: `<div style="
@@ -724,7 +680,6 @@ try {
                     iconAnchor: [15, 15]
                 });
                 
-                // Создаем маркер
                 const marker = L.marker([venue.lat, venue.lng], { icon: icon })
                     .addTo(map)
                     .bindPopup(`
@@ -750,16 +705,13 @@ try {
                 currentMarkers.push(marker);
             });
             
-            // Если отфильтровали и есть результаты, центрируем карту
             if ((filters.district || filters.type) && filteredData.length > 0) {
                 map.setView([filteredData[0].lat, filteredData[0].lng], 13);
             } else if (!filters.district && !filters.type) {
-                // Возвращаемся к виду по умолчанию
                 map.setView([55.7558, 37.6173], 11);
             }
         }
         
-        // Применение всех фильтров
         function applyFilters(map) {
             const district = document.getElementById('districtFilter').value;
             const type = document.getElementById('typeFilter').value;
@@ -770,11 +722,9 @@ try {
             });
         }
         
-        // Поиск на карте
         function searchOnMap(query, map) {
             if (!query.trim()) return;
             
-            // Ищем в названии, адресе или районе
             const foundVenue = venuesData.find(venue => {
                 const searchText = (venue.name + ' ' + venue.address + ' ' + venue.district).toLowerCase();
                 return searchText.includes(query.toLowerCase());
@@ -783,7 +733,6 @@ try {
             if (foundVenue) {
                 map.setView([foundVenue.lat, foundVenue.lng], 15);
                 
-                // Подсвечиваем найденную площадку
                 L.circle([foundVenue.lat, foundVenue.lng], {
                     color: '#f39c12',
                     fillColor: '#f1c40f',
@@ -795,7 +744,6 @@ try {
             }
         }
         
-        // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', initMap);
     </script>
 </body>

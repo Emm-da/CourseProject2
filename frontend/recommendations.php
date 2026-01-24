@@ -1,8 +1,6 @@
 <?php
-// recommendations.php - Умные рекомендации и советы
-require_once 'header.php'; 
+require_once 'header.php';
 
-// Получаем данные для рекомендаций
 function getApiData($endpoint) {
     $url = "http://localhost:8080/api" . $endpoint;
     $context = stream_context_create(['http' => ['timeout' => 5]]);
@@ -14,7 +12,6 @@ $stats = getApiData('/venues/stats');
 $allVenues = getApiData('/venues/all');
 $districts = getApiData('/venues/districts');
 
-// Массив месяцев с рекомендациями
 $monthRecommendations = [
     'Январь' => [
         'top_venues' => [
@@ -342,8 +339,6 @@ $monthRecommendations = [
     ]
 ];
 ?>
-
-<!-- Стили только для контента страницы рекомендаций -->
 <style>
     .recommendations-hero {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -752,7 +747,6 @@ $monthRecommendations = [
         font-size: 1.2em;
     }
     
-    /* Стили для кнопок навигации */
     .nav-buttons {
         display: flex;
         justify-content: center;
@@ -789,13 +783,9 @@ $monthRecommendations = [
         background: #6c7b7d;
     }
 </style>
-
 </head>
 <body>
-    <!-- Шапка уже подключена через header.php -->
-    
     <main>
-        <!-- Герой-секция -->
         <section class="recommendations-hero">
             <div class="container">
                 <h1 class="hero-title">💡 Умные рекомендации</h1>
@@ -804,7 +794,6 @@ $monthRecommendations = [
         </section>
         
         <div class="container">
-            <!-- Фильтры для рекомендаций -->
             <div class="recommendation-filters">
                 <div class="filters-header">
                     <h2>Настройте рекомендации</h2>
@@ -866,7 +855,6 @@ $monthRecommendations = [
                 </div>
             </div>
             
-            <!-- Умные рекомендации -->
             <div id="topChoiceCard" class="recommendation-card card-top-choice">
                 <div class="card-header">
                     <div class="card-icon">🎯</div>
@@ -897,7 +885,6 @@ $monthRecommendations = [
                 </div>
             </div>
             
-            <!-- Совет по формату -->
             <div id="formatAdviceCard" class="recommendation-card card-format-advice">
                 <div class="card-header">
                     <div class="card-icon">💡</div>
@@ -922,7 +909,6 @@ $monthRecommendations = [
                 </div>
             </div>
             
-            <!-- Срочность бронирования -->
             <div id="urgencyCard" class="recommendation-card card-urgency">
                 <div class="card-header">
                     <div class="card-icon">⚡</div>
@@ -980,7 +966,6 @@ $monthRecommendations = [
                 </div>
             </div>
             
-            <!-- Навигация -->
             <div class="nav-buttons">
                 <a href="index.php" class="nav-btn">
                     ← На главную
@@ -997,12 +982,9 @@ $monthRecommendations = [
     
 <?php require_once 'footer.php'; ?>
 
-    <!-- JavaScript для динамических рекомендаций -->
     <script>
-        // Данные рекомендаций по месяцам
         const monthRecommendations = <?php echo json_encode($monthRecommendations, JSON_UNESCAPED_UNICODE); ?>;
         
-        // Сохраняем изначальное состояние (значения по умолчанию)
         const defaultMonth = '<?php echo $currentMonth; ?>';
         const defaultEventType = '';
         const defaultAudienceSize = '';
@@ -1018,68 +1000,51 @@ $monthRecommendations = [
             const currentMonthSubtitle = document.getElementById('currentMonthSubtitle');
             const urgencyMonth = document.getElementById('urgencyMonth');
             
-            // Инициализация
             updateSelectionText();
             
-            // Обработчик нажатия кнопки "Применить фильтры"
             applyBtn.addEventListener('click', function() {
                 applyRecommendations();
             });
             
-            // Обработчик нажатия кнопки "Сбросить фильтры"
             resetBtn.addEventListener('click', function() {
                 resetFilters();
             });
             
-            // Автоматическое обновление при изменении месяца
             monthSelect.addEventListener('change', function() {
                 updateSelectionText();
             });
             
-            // Функция сброса фильтров
             function resetFilters() {
-                
-                
-                // Сбрасываем значения в селектах
                 eventTypeSelect.value = defaultEventType;
                 audienceSizeSelect.value = defaultAudienceSize;
                 monthSelect.value = defaultMonth;
                 
-                // Обновляем текст текущего выбора
                 updateSelectionText();
                 
-                // Применяем рекомендации с дефолтными значениями
                 currentMonthTitle.textContent = defaultMonth;
                 currentMonthSubtitle.textContent = 'На основе анализа бронирований и отзывов пользователей';
                 urgencyMonth.textContent = defaultMonth;
                 
-                // Обновляем рекомендации на основе месяца
                 updateMonthRecommendations(defaultMonth);
                 
-                // Сбрасываем совет
                 updateEventTypeAdvice('');
                 
-                // Обновляем срочность на основе месяца
                 updateUrgencyInfo(defaultMonth);
                 
-                // Показываем уведомление
                 showNotification('Фильтры сброшены!', 'info');
                 
-                // Скрываем загрузку
                 setTimeout(() => {
                     applyBtn.innerHTML = '<span>Применить фильтры</span><span>→</span>';
                     applyBtn.disabled = false;
                     resetBtn.disabled = false;
                 }, 500);
                 
-                // Прокручиваем к первой карточке
                 document.getElementById('topChoiceCard').scrollIntoView({ 
                     behavior: 'smooth',
                     block: 'start'
                 });
             }
             
-            // Функция обновления текста текущего выбора
             function updateSelectionText() {
                 const eventType = eventTypeSelect.value ? getOptionText(eventTypeSelect) : 'Любой';
                 const audienceSize = audienceSizeSelect.value ? getOptionText(audienceSizeSelect) : 'Любое количество';
@@ -1092,52 +1057,39 @@ $monthRecommendations = [
                 `;
             }
             
-            // Функция получения текста выбранной опции
             function getOptionText(selectElement) {
                 return selectElement.options[selectElement.selectedIndex].text;
             }
             
-            // Основная функция применения рекомендаций
             function applyRecommendations() {
-                
-                
-                // Получаем значения фильтров
                 const selectedMonth = monthSelect.value;
                 const eventType = eventTypeSelect.value;
                 const audienceSize = audienceSizeSelect.value;
                 
-                // Обновляем заголовки
                 currentMonthTitle.textContent = selectedMonth;
                 currentMonthSubtitle.textContent = generateSubtitle(eventType, audienceSize);
                 urgencyMonth.textContent = selectedMonth;
                 
-                // Обновляем рекомендации на основе месяца
                 updateMonthRecommendations(selectedMonth);
                 
-                // Обновляем советы на основе типа мероприятия
                 updateEventTypeAdvice(eventType);
                 
-                // Обновляем срочность на основе месяца
                 updateUrgencyInfo(selectedMonth);
                 
-                // Показываем уведомление
                 showNotification('Фильтры успешно применены!', 'success');
                 
-                // Скрываем загрузку
                 setTimeout(() => {
                     applyBtn.innerHTML = '<span>Применить фильтры</span><span>→</span>';
                     applyBtn.disabled = false;
                     resetBtn.disabled = false;
                 }, 500);
                 
-                // Прокручиваем к первой карточке
                 document.getElementById('topChoiceCard').scrollIntoView({ 
                     behavior: 'smooth',
                     block: 'start'
                 });
             }
             
-            // Функция обновления рекомендаций по месяцам
             function updateMonthRecommendations(month) {
                 const monthData = monthRecommendations[month];
                 
@@ -1146,7 +1098,6 @@ $monthRecommendations = [
                     return;
                 }
                 
-                // Обновляем топ площадки
                 const topVenuesContainer = document.getElementById('topVenuesContainer');
                 const venuesHTML = monthData.top_venues.map(venue => `
                     <div class="venue-recommendation">
@@ -1165,7 +1116,6 @@ $monthRecommendations = [
                     </div>
                 `;
                 
-                // Обновляем совет
                 const formatAdviceContent = document.getElementById('formatAdviceContent');
                 formatAdviceContent.innerHTML = `
                     <p style="font-size: 1.2em; line-height: 1.6; margin-bottom: 25px;">
@@ -1181,7 +1131,6 @@ $monthRecommendations = [
                     </div>
                 `;
                 
-                // Обновляем срочность
                 const urgencyContent = document.getElementById('urgencyContent');
                 if (urgencyContent) {
                     urgencyContent.querySelector('.timeline-month').textContent = `Месяц: ${month}`;
@@ -1193,7 +1142,6 @@ $monthRecommendations = [
                 }
             }
             
-            // Функция обновления советов по типу мероприятия
             function updateEventTypeAdvice(eventType) {
                 const aiSuggestion = document.querySelector('.ai-suggestion p');
                 if (!aiSuggestion) return;
@@ -1207,16 +1155,13 @@ $monthRecommendations = [
                 if (eventType && eventTypeTips[eventType]) {
                     aiSuggestion.innerHTML = eventTypeTips[eventType] + ' На основе анализа данных за выбранный месяц, система рекомендует площадки с учетом сезонных особенностей.';
                 } else {
-                    // Возвращаем дефолтный текст
                     aiSuggestion.innerHTML = 'На основе вашего запроса система рекомендует площадки в популярных районах с хорошей транспортной доступностью. На основе анализа данных за выбранный месяц, система рекомендует площадки с учетом сезонных особенностей.';
                 }
             }
             
-            // Функция обновления информации о срочности
             function updateUrgencyInfo(month) {
                 const timelineItems = document.querySelectorAll('.timeline-item');
                 
-                // Обновляем статусы в зависимости от месяца
                 const monthFactors = {
                     'Январь': { busy: 3, moderate: 2, available: 1 },
                     'Февраль': { busy: 2, moderate: 3, available: 1 },
@@ -1254,7 +1199,6 @@ $monthRecommendations = [
                 });
             }
             
-            // Генерация подзаголовка
             function generateSubtitle(eventType, audienceSize) {
                 const parts = [];
                 
@@ -1266,7 +1210,6 @@ $monthRecommendations = [
                     : 'На основе анализа бронирований и отзывов пользователей';
             }
             
-            // Генерация ИИ-совета
             function generateAITip(month) {
                 const tips = {
                     'Январь': 'Обратите внимание на отопление и удобный подъезд в зимних условиях.',
@@ -1274,7 +1217,7 @@ $monthRecommendations = [
                     'Март': 'Весенняя распутица может создать сложности с парковкой - выбирайте площадки с твердым покрытием.',
                     'Апрель': 'Идеальное время для открытых площадок, но имейте запасной вариант на случай дождя.',
                     'Май': 'Пик сезона - бронируйте заранее и уточняйте условия отмены при непогоде.',
-                    'Июнь': 'Длинные световые дни позволяют проводить вечерние мероприятия при естественном освещении.',
+                    'Июнь': 'Длинные световые дни позволяют проводить вечерные мероприятия при естественном освещении.',
                     'Июль': 'Выбирайте площадки с навесами от солнца и хорошей вентиляцией.',
                     'Август': 'Идеально для ночных мероприятий - теплые ночи и звездное небо.',
                     'Сентябрь': 'Бархатный сезон - комфортная температура и красивые осенние пейзажи.',
@@ -1286,15 +1229,12 @@ $monthRecommendations = [
                 return tips[month] || 'Рекомендуем уточнять условия площадки заранее.';
             }
             
-            // Показать уведомление
             function showNotification(message, type = 'success') {
-                // Удаляем старое уведомление
                 const oldNotification = document.querySelector('.notification');
                 if (oldNotification) {
                     oldNotification.remove();
                 }
                 
-                // Цвета для разных типов уведомлений
                 const colors = {
                     'success': '#2ecc71',
                     'error': '#e74c3c',
@@ -1309,7 +1249,6 @@ $monthRecommendations = [
                     'warning': '⚠️'
                 };
                 
-                // Создаем новое уведомление
                 const notification = document.createElement('div');
                 notification.className = 'notification';
                 notification.innerHTML = `
@@ -1335,7 +1274,6 @@ $monthRecommendations = [
                 
                 document.body.appendChild(notification);
                 
-                // Автоматическое скрытие через 3 секунды
                 setTimeout(() => {
                     notification.classList.add('hidden');
                     setTimeout(() => {
@@ -1346,7 +1284,6 @@ $monthRecommendations = [
                 }, 3000);
             }
             
-            // Показать сообщение об отсутствии результатов
             function showNoResults() {
                 const topVenuesContainer = document.getElementById('topVenuesContainer');
                 topVenuesContainer.innerHTML = `

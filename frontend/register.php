@@ -1,6 +1,7 @@
+```php
 <?php
 session_start();
-// ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ
+
 $host = 'localhost';
 $dbname = 'music_venues_db';
 $username = 'root';
@@ -16,7 +17,6 @@ try {
 $errors = [];
 $success = false;
 
-// Получаем параметры редиректа
 $redirect = $_GET['redirect'] ?? '';
 $venue_id = $_GET['venue_id'] ?? 0;
 
@@ -26,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     
-    // Валидация
     if (empty($username)) {
         $errors[] = 'Введите имя пользователя';
     } elseif (strlen($username) < 3) {
@@ -51,14 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (empty($errors)) {
         try {
-            // Проверяем, существует ли email
             $check_stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
             $check_stmt->execute([$email]);
             
             if ($check_stmt->fetch()) {
                 $errors[] = 'Пользователь с таким email уже существует';
             } else {
-                // Создаем пользователя
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
                 $insert_stmt = $pdo->prepare("
@@ -68,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $insert_stmt->execute([$username, $email, $hashed_password]);
                 
-                // Автоматически логиним пользователя
                 $user_id = $pdo->lastInsertId();
                 $_SESSION['user_id'] = $user_id;
                 $_SESSION['username'] = $username;
@@ -76,7 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $success = true;
                 
-                // Определяем куда перенаправить после регистрации
                 if ($redirect === 'booking' && $venue_id) {
                     header('Refresh: 2; URL=booking.php?id=' . $venue_id);
                 } else {
@@ -89,7 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -442,9 +436,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const reqNumber = document.getElementById('reqNumber');
             
             let strength = 0;
-            let color = '#e74c3c'; // Красный по умолчанию
+            let color = '#e74c3c';
             
-            // Проверка длины
             if (password.length >= 6) {
                 strength += 33;
                 reqLength.querySelector('span').className = 'requirement-met';
@@ -454,7 +447,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 reqLength.querySelector('span').textContent = '○';
             }
             
-            // Проверка наличия букв
             if (/[a-zA-Z]/.test(password)) {
                 strength += 33;
                 reqLetter.querySelector('span').className = 'requirement-met';
@@ -464,7 +456,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 reqLetter.querySelector('span').textContent = '○';
             }
             
-            // Проверка наличия цифр
             if (/\d/.test(password)) {
                 strength += 34;
                 reqNumber.querySelector('span').className = 'requirement-met';
@@ -474,17 +465,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 reqNumber.querySelector('span').textContent = '○';
             }
             
-            // Определяем цвет
             if (strength >= 66) {
-                color = '#2ecc71'; // Зеленый
+                color = '#2ecc71';
             } else if (strength >= 33) {
-                color = '#f39c12'; // Оранжевый
+                color = '#f39c12';
             }
             
             strengthFill.style.width = strength + '%';
             strengthFill.style.background = color;
             
-            // Проверяем совпадение паролей
             checkPasswordMatch();
         }
         
@@ -508,7 +497,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
-        // Инициализация при загрузке
         document.addEventListener('DOMContentLoaded', function() {
             checkPasswordStrength();
             checkPasswordMatch();
@@ -516,3 +504,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </script>
 </body>
 </html>
+```

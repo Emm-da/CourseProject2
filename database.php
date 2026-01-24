@@ -1,5 +1,4 @@
 <?php
-// Подключение к базе данных
 $host = 'localhost';
 $dbname = 'music_venues_db';
 $username = 'root';

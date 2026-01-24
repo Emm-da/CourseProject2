@@ -1,6 +1,5 @@
 <?php
 session_start();
-// ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ
 $host = 'localhost';
 $dbname = 'music_venues_db';
 $username = 'root';
@@ -15,7 +14,6 @@ try {
 
 $error = '';
 
-// Получаем параметры редиректа
 $redirect = $_GET['redirect'] ?? '';
 $venue_id = $_GET['venue_id'] ?? 0;
 
@@ -34,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['email'] = $user['email'];
                 
-                // Определяем куда перенаправить после входа
                 if ($redirect === 'booking' && $venue_id) {
                     header('Location: booking.php?id=' . $venue_id);
                 } else {

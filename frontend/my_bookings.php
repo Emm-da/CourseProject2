@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Подключение к базе данных
 $host = 'localhost';
 $dbname = 'music_venues_db';
 $username = 'root';
@@ -20,7 +19,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Получаем бронирования пользователя
 $stmt = $pdo->prepare("
     SELECT b.*, v.name as venue_name, v.address, v.district 
     FROM bookings b
@@ -31,7 +29,6 @@ $stmt = $pdo->prepare("
 $stmt->execute([$_SESSION['user_id']]);
 $bookings = $stmt->fetchAll();
 
-// Обработка отмены бронирования
 if (isset($_POST['cancel_booking'])) {
     $booking_id = $_POST['booking_id'] ?? 0;
     
@@ -51,7 +48,6 @@ $page_title = 'Мои бронирования';
 require_once 'header.php';
 ?>
 
-<!-- Стили в стиле страницы поиска -->
 <style>
     .bookings-container { 
         max-width: 1200px; 
@@ -427,46 +423,40 @@ require_once 'header.php';
 
 <main>
     <div class="bookings-container">
-        <!-- Заголовок страницы -->
         <div class="bookings-header">
-            <h1>📅 Мои бронирования</h1>
+            <h1>Мои бронирования</h1>
             <p class="subtitle">Здесь вы можете просмотреть все ваши заявки на бронирование музыкальных площадок</p>
         </div>
         
-        <!-- Быстрые действия -->
         <div class="controls">
             <div style="text-align: center; margin-bottom: 20px;">
-                <a href="search.php" class="btn">🔍 Найти новые площадки</a>
-                <a href="index.php" class="btn btn-secondary">← На главную</a>
+                <a href="search.php" class="btn">Найти новые площадки</a>
+                <a href="index.php" class="btn btn-secondary">На главную</a>
             </div>
         </div>
         
-        <!-- Фильтры -->
         <div class="filters">
             <div class="filter-buttons">
                 <button class="filter-btn active" onclick="filterBookings('all')">Все</button>
-                <button class="filter-btn" onclick="filterBookings('pending')">⏳ Ожидание</button>
-                <button class="filter-btn" onclick="filterBookings('confirmed')">✅ Подтвержденные</button>
-                <button class="filter-btn" onclick="filterBookings('cancelled')">❌ Отмененные</button>
-                <button class="filter-btn" onclick="filterBookings('completed')">✓ Завершенные</button>
+                <button class="filter-btn" onclick="filterBookings('pending')">Ожидание</button>
+                <button class="filter-btn" onclick="filterBookings('confirmed')">Подтвержденные</button>
+                <button class="filter-btn" onclick="filterBookings('cancelled')">Отмененные</button>
+                <button class="filter-btn" onclick="filterBookings('completed')">Завершенные</button>
             </div>
         </div>
         
-        <!-- Счетчик результатов -->
         <div class="results-count">
             Найдено бронирований: <span style="color: #4a6fa5;"><?php echo count($bookings); ?></span>
         </div>
         
-        <!-- Результаты -->
         <div id="bookingsList">
             <?php if (empty($bookings)): ?>
                 <div class="no-bookings">
-                    <span class="emoji">📭</span>
                     <h3>У вас пока нет бронирований</h3>
                     <p>Найдите подходящую музыкальную площадку и забронируйте её для своего мероприятия</p>
                     <div style="margin-top: 20px;">
-                        <a href="search.php" class="btn">🔍 Найти площадку</a>
-                        <a href="index.php" class="btn btn-secondary">← На главную</a>
+                        <a href="search.php" class="btn">Найти площадку</a>
+                        <a href="index.php" class="btn btn-secondary">На главную</a>
                     </div>
                 </div>
             <?php else: ?>
@@ -474,32 +464,26 @@ require_once 'header.php';
                     <?php 
                     $status_class = '';
                     $status_text = '';
-                    $status_icon = '';
                     
                     switch ($booking['status']) {
                         case 'pending':
                             $status_class = 'status-pending';
                             $status_text = 'Ожидание';
-                            $status_icon = '⏳';
                             break;
                         case 'confirmed':
                             $status_class = 'status-confirmed';
                             $status_text = 'Подтверждено';
-                            $status_icon = '✅';
                             break;
                         case 'cancelled':
                             $status_class = 'status-cancelled';
                             $status_text = 'Отменено';
-                            $status_icon = '❌';
                             break;
                         case 'completed':
                             $status_class = 'status-completed';
                             $status_text = 'Завершено';
-                            $status_icon = '✓';
                             break;
                     }
                     
-                    // Форматирование даты и времени
                     $booking_date = date('d.m.Y', strtotime($booking['booking_date']));
                     $start_time = date('H:i', strtotime($booking['start_time']));
                     $end_time = date('H:i', strtotime($booking['end_time']));
@@ -509,35 +493,35 @@ require_once 'header.php';
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                             <h3 class="booking-name"><?php echo htmlspecialchars($booking['venue_name']); ?></h3>
                             <span class="booking-status <?php echo $status_class; ?>">
-                                <?php echo $status_icon; ?> <?php echo $status_text; ?>
+                                <?php echo $status_text; ?>
                             </span>
                         </div>
                         
                         <p class="booking-info">
-                            <strong>📍 Адрес:</strong> <?php echo htmlspecialchars($booking['address']); ?>
+                            <strong>Адрес:</strong> <?php echo htmlspecialchars($booking['address']); ?>
                         </p>
                         <p class="booking-info">
-                            <strong>📅 Дата:</strong> <?php echo $booking_date; ?>
+                            <strong>Дата:</strong> <?php echo $booking_date; ?>
                         </p>
                         <p class="booking-info">
-                            <strong>⏰ Время:</strong> <?php echo $start_time; ?> - <?php echo $end_time; ?>
+                            <strong>Время:</strong> <?php echo $start_time; ?> - <?php echo $end_time; ?>
                         </p>
                         <p class="booking-info">
-                            <strong>🎭 Цель:</strong> <?php echo htmlspecialchars($booking['purpose']); ?>
+                            <strong>Цель:</strong> <?php echo htmlspecialchars($booking['purpose']); ?>
                         </p>
                         <p class="booking-info">
-                            <strong>👥 Участников:</strong> <?php echo $booking['attendees_count']; ?> человек
+                            <strong>Участников:</strong> <?php echo $booking['attendees_count']; ?> человек
                         </p>
                         <p class="booking-info">
-                            <strong>📞 Контактный телефон:</strong> <?php echo htmlspecialchars($booking['contact_phone']); ?>
+                            <strong>Контактный телефон:</strong> <?php echo htmlspecialchars($booking['contact_phone']); ?>
                         </p>
                         <p class="booking-info">
-                            <strong>📝 ID бронирования:</strong> #<?php echo $booking['id']; ?>
+                            <strong>ID бронирования:</strong> #<?php echo $booking['id']; ?>
                         </p>
                         
                         <?php if ($booking['notes']): ?>
                             <div style="margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 3px solid #4a6fa5;">
-                                <strong>📝 Дополнительные пожелания:</strong>
+                                <strong>Дополнительные пожелания:</strong>
                                 <p style="margin-top: 5px; color: #555;"><?php echo nl2br(htmlspecialchars($booking['notes'])); ?></p>
                             </div>
                         <?php endif; ?>
@@ -548,18 +532,18 @@ require_once 'header.php';
                                     <input type="hidden" name="booking_id" value="<?php echo $booking['id']; ?>">
                                     <button type="submit" name="cancel_booking" class="btn btn-danger"
                                             onclick="return confirm('Вы уверены, что хотите отменить это бронирование?')">
-                                        <i class="fas fa-times"></i> Отменить бронирование
+                                        Отменить бронирование
                                     </button>
                                 </form>
                             <?php endif; ?>
                             
                             <a href="venue_detail.php?id=<?php echo $booking['venue_id']; ?>" class="btn">
-                                <i class="fas fa-eye"></i> Посмотреть площадку
+                                Посмотреть площадку
                             </a>
                             
                             <?php if ($booking['status'] == 'pending'): ?>
                                 <a href="booking.php?id=<?php echo $booking['venue_id']; ?>" class="btn btn-secondary">
-                                    <i class="fas fa-edit"></i> Изменить бронирование
+                                    Изменить бронирование
                                 </a>
                             <?php endif; ?>
                         </div>
@@ -567,20 +551,16 @@ require_once 'header.php';
                 <?php endforeach; ?>
             <?php endif; ?>
         </div>
-        
-    
     </div>
 </main>
 
 <?php require_once 'footer.php'; ?>
 
 <script>
-    // Фильтрация бронирований
     function filterBookings(status) {
         const bookings = document.querySelectorAll('.booking-card');
         const filterButtons = document.querySelectorAll('.filter-btn');
         
-        // Обновляем активную кнопку
         filterButtons.forEach(btn => {
             btn.classList.remove('active');
             if (btn.textContent.toLowerCase().includes(status)) {
@@ -588,7 +568,6 @@ require_once 'header.php';
             }
         });
         
-        // Показываем/скрываем бронирования
         bookings.forEach(booking => {
             if (status === 'all' || booking.dataset.status === status) {
                 booking.style.display = 'block';
@@ -602,13 +581,11 @@ require_once 'header.php';
         });
     }
     
-    // Показ уведомления об отмене
     <?php if (isset($_GET['cancelled'])): ?>
         document.addEventListener('DOMContentLoaded', function() {
             const notification = document.createElement('div');
             notification.className = 'notification';
             notification.innerHTML = `
-                <span style="font-size: 1.3em;">✅</span>
                 <span>Бронирование успешно отменено</span>
             `;
             
@@ -625,7 +602,6 @@ require_once 'header.php';
         });
     <?php endif; ?>
     
-    // Анимация появления карточек
     document.addEventListener('DOMContentLoaded', function() {
         const bookings = document.querySelectorAll('.booking-card');
         bookings.forEach((booking, index) => {

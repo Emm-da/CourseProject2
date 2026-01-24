@@ -1,9 +1,7 @@
 <?php
-// venue_detail.php - Детальная страница площадки
 $page_title = 'Детали площадки - Музыкальные площадки Москвы';
 require_once 'header.php';
 
-// ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ
 $host = 'localhost';
 $dbname = 'music_venues_db';
 $username = 'root';
@@ -17,20 +15,16 @@ try {
     die("Ошибка подключения к базе данных: " . $e->getMessage());
 }
 
-// Получаем ID площадки из URL
 $venue_id = $_GET['id'] ?? 1;
 
-// Получение информации о площадке
 $stmt = $pdo->prepare("SELECT * FROM venues WHERE id = ?");
 $stmt->execute([$venue_id]);
 $venue = $stmt->fetch();
 
-// Получение фотографий площадки
 $photos_stmt = $pdo->prepare("SELECT * FROM venue_photos WHERE venue_id = ? ORDER BY is_main DESC");
 $photos_stmt->execute([$venue_id]);
 $photos = $photos_stmt->fetchAll();
 
-// Получение оборудования и характеристик
 $features_stmt = $pdo->prepare("SELECT feature_name, feature_value FROM venue_features WHERE venue_id = ?");
 $features_stmt->execute([$venue_id]);
 $features = $features_stmt->fetchAll();
@@ -39,10 +33,7 @@ if(!$venue) {
     die("Площадка не найдена");
 }
 ?>
-
-<!-- Стили только для контента страницы -->
 <style>
-    /* Основной контент */
     main {
         padding: 40px 0;
         min-height: 70vh;
@@ -317,7 +308,6 @@ if(!$venue) {
         }
     }
     
-    /* Контактная информация */
     .contact-info {
         background: linear-gradient(135deg, #4a6fa5 0%, #2c3e50 100%);
         color: white;
@@ -376,7 +366,6 @@ if(!$venue) {
         opacity: 0.8;
     }
     
-    /* Адаптивность */
     @media (max-width: 768px) {
         .venue-detail {
             padding: 20px;
@@ -401,7 +390,6 @@ if(!$venue) {
         }
     }
     
-    /* Утилиты */
     .text-center { text-align: center; }
     .mt-20 { margin-top: 20px; }
     .mb-20 { margin-bottom: 20px; }
@@ -495,26 +483,21 @@ if(!$venue) {
                 </table>
             </div>
             
-            <!-- Кнопки избранного и бронирования -->
             <div class="venue-actions">
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <!-- Кнопка избранного -->
                     <button id="favoriteBtn" class="btn btn-secondary" onclick="toggleFavorite(<?php echo $venue['id']; ?>)">
                         <i class="far fa-heart" id="favoriteIcon"></i>
                         <span id="favoriteText">В избранное</span>
                     </button>
                     
-                    <!-- Кнопка бронирования -->
                     <a href="booking.php?id=<?php echo $venue['id']; ?>" class="btn btn-primary">
                         <i class="fas fa-calendar-alt"></i> Забронировать
                     </a>
                     
-                    <!-- Кнопка поделиться -->
                     <button class="btn btn-secondary" onclick="shareVenue()">
                         <i class="fas fa-share-alt"></i> Поделиться
                     </button>
                 <?php else: ?>
-                    <!-- Если пользователь не авторизован -->
                     <a href="login.php?redirect=booking&venue_id=<?php echo $venue['id']; ?>" class="btn btn-primary">
                         <i class="fas fa-calendar-alt"></i> Забронировать
                     </a>
@@ -599,20 +582,16 @@ if(!$venue) {
 <?php require_once 'footer.php'; ?>
 
 <script>
-    // Смена основного изображения
     function changeMainImage(src, element) {
         document.getElementById('mainImage').src = src;
         
-        // Удаляем активный класс у всех миниатюр
         document.querySelectorAll('.thumbnail').forEach(img => {
             img.classList.remove('active');
         });
         
-        // Добавляем активный класс к выбранной миниатюре
         element.classList.add('active');
     }
     
-    // Поделиться площадкой
     function shareVenue() {
         if (navigator.share) {
             navigator.share({
@@ -621,13 +600,11 @@ if(!$venue) {
                 url: window.location.href
             });
         } else {
-            // Копирование ссылки в буфер обмена для старых браузеров
             navigator.clipboard.writeText(window.location.href)
                 .then(() => showNotification('Ссылка скопирована в буфер обмена!', 'success'));
         }
     }
     
-    // Управление масштабом изображения
     const mainImage = document.getElementById('mainImage');
     let isZoomed = false;
     
@@ -642,7 +619,6 @@ if(!$venue) {
         isZoomed = !isZoomed;
     });
 
-    // Проверяем, добавлена ли площадка в избранное при загрузке страницы
     function checkFavoriteStatus(venueId) {
         fetch('ajax_favorites.php', {
             method: 'POST',
@@ -661,7 +637,6 @@ if(!$venue) {
         .catch(error => console.error('Ошибка проверки:', error));
     }
 
-    // Функция переключения избранного
     function toggleFavorite(venueId) {
         const favoriteBtn = document.getElementById('favoriteBtn');
         const isCurrentlyFavorite = favoriteBtn.classList.contains('active');
@@ -689,7 +664,6 @@ if(!$venue) {
         });
     }
 
-    // Обновление внешнего вида кнопки
     function updateFavoriteButton(isFavorite) {
         const favoriteBtn = document.getElementById('favoriteBtn');
         const favoriteIcon = document.getElementById('favoriteIcon');
@@ -708,9 +682,7 @@ if(!$venue) {
         }
     }
     
-    // Функция показа уведомления
     function showNotification(message, type = 'success') {
-        // Удаляем старое уведомление
         const oldNotification = document.querySelector('.notification:not(.hidden)');
         if (oldNotification) {
             oldNotification.classList.add('hidden');
@@ -721,7 +693,6 @@ if(!$venue) {
             }, 300);
         }
         
-        // Создаем новое уведомление
         const notification = document.createElement('div');
         notification.className = 'notification ' + type;
         notification.innerHTML = `
@@ -731,7 +702,6 @@ if(!$venue) {
         
         document.body.appendChild(notification);
         
-        // Автоматическое скрытие через 3 секунды
         setTimeout(() => {
             notification.classList.add('hidden');
             setTimeout(() => {
@@ -742,7 +712,6 @@ if(!$venue) {
         }, 3000);
     }
 
-    // Инициализация при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
         <?php if (isset($_SESSION['user_id']) && isset($venue['id'])): ?>
             checkFavoriteStatus(<?php echo $venue['id']; ?>);

@@ -1,5 +1,4 @@
 <?php
-// footer.php - Универсальный футер для всех страниц
 ?>
 
     <footer class="footer">
@@ -34,7 +33,6 @@
     </footer>
     
     <style>
-        /* Стили для футера */
         .footer {
             background: linear-gradient(135deg, #2c3e50 0%, #1a2530 100%);
             color: white;
@@ -147,7 +145,6 @@
             font-style: italic;
         }
         
-        /* Адаптивность */
         @media (max-width: 768px) {
             .footer {
                 padding: 40px 0 20px;
@@ -176,9 +173,6 @@
     </style>
     
     <script>
-        // Общие скрипты для всех страниц
-        
-        // Плавная прокрутка для якорных ссылок
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -195,7 +189,6 @@
             });
         });
         
-        // Автоматическое обновление года в футере
         document.addEventListener('DOMContentLoaded', function() {
             const yearElement = document.querySelector('.footer-bottom p:first-child');
             if (yearElement) {
@@ -203,7 +196,6 @@
             }
         });
         
-        // Анимация при наведении на социальные иконки
         document.querySelectorAll('.footer-links a').forEach(link => {
             link.addEventListener('mouseenter', function() {
                 this.style.color = '#4a6fa5';
@@ -213,7 +205,6 @@
             });
         });
         
-        // Простая проверка формы (если есть)
         const forms = document.querySelectorAll('form');
         forms.forEach(form => {
             form.addEventListener('submit', function(e) {

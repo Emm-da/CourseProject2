@@ -1,8 +1,6 @@
 <?php
-// map.php - Интерактивная карта всех площадок
 header('Content-Type: text/html; charset=utf-8');
 
-// Подключаемся напрямую к базе данных
 $host = 'localhost';
 $dbname = 'music_venues_db';
 $username = 'root';
@@ -15,7 +13,6 @@ try {
     die("Ошибка подключения к базе данных: " . $e->getMessage());
 }
 
-// Получаем ВСЕ площадки с координатами
 $stmt = $pdo->query("
     SELECT 
         id,
@@ -39,12 +36,6 @@ $stmt = $pdo->query("
 ");
 
 $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Для отладки
-// echo "<!-- Найдено площадок: " . count($venues) . " -->";
-// if (!empty($venues)) {
-//     echo "<!-- Первая площадка: " . $venues[0]['name'] . " (" . $venues[0]['latitude'] . ", " . $venues[0]['longitude'] . ") -->";
-// }
 ?>
 
 <!DOCTYPE html>
@@ -54,7 +45,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Карта музыкальных площадок Москвы</title>
     
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         * {
@@ -353,10 +343,9 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
     <div class="map-wrapper">
-        <!-- Сайдбар с контролами -->
         <div class="sidebar">
             <div class="header">
-                <h1>🗺️ Карта площадок Москвы</h1>
+                <h1>Карта площадок Москвы</h1>
                 <p>Интерактивная карта музыкальных площадок</p>
             </div>
             
@@ -388,7 +377,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <select id="districtFilter" onchange="filterByDistrict()">
                         <option value="">Все районы</option>
                         <?php
-                        // Получаем уникальные районы
                         $districtsStmt = $pdo->query("
                             SELECT DISTINCT district 
                             FROM venues 
@@ -412,7 +400,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <select id="areaFilter" onchange="filterByArea()">
                         <option value="">Все округа</option>
                         <?php
-                        // Получаем уникальные округа
                         $areasStmt = $pdo->query("
                             SELECT DISTINCT adm_area 
                             FROM venues 
@@ -434,19 +421,16 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Поиск площадки...">
-                <button onclick="searchVenue()">🔍</button>
+                <button onclick="searchVenue()">Поиск</button>
             </div>
             
             <div class="venues-list" id="venuesList">
-                <!-- Список площадок будет здесь -->
             </div>
         </div>
         
-        <!-- Карта -->
         <div class="map-container">
             <div id="map"></div>
             
-            <!-- Контролы на карте -->
             <div class="map-controls">
                 <div class="search-box">
                     <input type="text" id="mapSearch" placeholder="Поиск на карте...">
@@ -454,7 +438,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
             
-            <!-- Легенда -->
             <div class="legend">
                 <div class="legend-item">
                     <div class="legend-color" style="background: #e74c3c;"></div>
@@ -476,51 +459,41 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
     
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // Глобальные переменные
         let map;
         let markers = [];
         let venuesData = <?php echo json_encode($venues, JSON_UNESCAPED_UNICODE | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS); ?>;
         let userMarker = null;
         
-        // Инициализация карты
         function initMap() {
             console.log('Инициализация карты...');
             console.log('Данные площадок:', venuesData.length);
             
-            // Создаем карту
             map = L.map('map', {
                 center: [55.7558, 37.6173],
                 zoom: 11,
                 zoomControl: true
             });
             
-            // Добавляем слой OpenStreetMap
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap',
                 maxZoom: 19
             }).addTo(map);
             
-            // Добавляем маркеры
             addMarkersToMap();
             
-            // Обновляем статистику
             updateStats();
             
-            // Инициализируем список площадок
             updateVenuesList();
             
             console.log('Карта инициализирована');
         }
         
-        // Добавление маркеров на карту
         function addMarkersToMap() {
             console.log('Добавление маркеров...');
             
-            // Очищаем старые маркеры
             clearMarkers();
             
             let markersAdded = 0;
@@ -541,12 +514,9 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById('visibleVenues').textContent = markersAdded;
         }
         
-        // Добавление одного маркера
         function addMarker(venue, lat, lng) {
-            // Цвет маркера
             const color = getVenueColor(venue.name);
             
-            // Создаем иконку
             const icon = L.divIcon({
                 className: 'venue-marker',
                 html: `
@@ -564,35 +534,29 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         font-size: 12px;
                         cursor: pointer;
                     ">
-                        🎵
+                        M
                     </div>
                 `,
                 iconSize: [24, 24],
                 iconAnchor: [12, 12]
             });
             
-            // Создаем маркер
             const marker = L.marker([lat, lng], { icon: icon });
             
-            // Добавляем попап
             marker.bindPopup(createPopupContent(venue));
             
-            // Добавляем на карту
             marker.addTo(map);
             
-            // Сохраняем маркер
             markers.push({
                 marker: marker,
                 venue: venue
             });
             
-            // Добавляем обработчик клика
             marker.on('click', function() {
                 highlightVenue(venue.id);
             });
         }
         
-        // Получение цвета маркера
         function getVenueColor(name) {
             const lowerName = (name || '').toLowerCase();
             
@@ -603,7 +567,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return '#f39c12';
         }
         
-        // Создание содержимого попапа
         function createPopupContent(venue) {
             const wifi = venue.wifi_availability ? '✓' : '✗';
             
@@ -628,7 +591,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             `;
         }
         
-        // Очистка маркеров
         function clearMarkers() {
             markers.forEach(item => {
                 map.removeLayer(item.marker);
@@ -636,7 +598,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             markers = [];
         }
         
-        // Функции управления картой
         function zoomToMoscow() {
             map.setView([55.7558, 37.6173], 11);
             showNotification('Карта центрирована на Москве');
@@ -664,7 +625,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             showNotification('Карта очищена');
         }
         
-        // Фильтрация
         function filterByDistrict() {
             const district = document.getElementById('districtFilter').value;
             filterVenues('district', district);
@@ -677,12 +637,10 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         function filterVenues(field, value) {
             if (!value) {
-                // Показываем все
                 markers.forEach(item => {
                     item.marker.addTo(map);
                 });
             } else {
-                // Фильтруем
                 markers.forEach(item => {
                     if (item.venue[field] && item.venue[field].includes(value)) {
                         item.marker.addTo(map);
@@ -696,7 +654,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             updateVenuesList();
         }
         
-        // Поиск
         function searchVenue() {
             const query = document.getElementById('searchInput').value.trim().toLowerCase();
             if (!query) return;
@@ -711,7 +668,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
             
             if (found.length > 0) {
-                // Показываем только найденные
                 markers.forEach(item => {
                     map.removeLayer(item.marker);
                 });
@@ -720,7 +676,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     item.marker.addTo(map);
                 });
                 
-                // Центрируем на первом найденном
                 const firstMarker = found[0].marker;
                 map.setView(firstMarker.getLatLng(), 15);
                 firstMarker.openPopup();
@@ -738,11 +693,9 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             const query = document.getElementById('mapSearch').value.trim();
             if (!query) return;
             
-            // Здесь можно добавить геокодирование
             showNotification('Поиск на карте: ' + query);
         }
         
-        // Геолокация
         function getUserLocation() {
             if (!navigator.geolocation) {
                 showNotification('Геолокация не поддерживается', 'error');
@@ -754,12 +707,10 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
                     
-                    // Удаляем старый маркер
                     if (userMarker) {
                         map.removeLayer(userMarker);
                     }
                     
-                    // Добавляем новый
                     userMarker = L.marker([lat, lng], {
                         icon: L.divIcon({
                             className: 'user-location',
@@ -780,13 +731,11 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             );
         }
         
-        // Обновление статистики
         function updateStats() {
             const visible = markers.filter(item => map.hasLayer(item.marker)).length;
             document.getElementById('visibleVenues').textContent = visible;
         }
         
-        // Обновление списка площадок
         function updateVenuesList() {
             const list = document.getElementById('venuesList');
             const visibleMarkers = markers.filter(item => map.hasLayer(item.marker));
@@ -813,9 +762,7 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById('selectedVenues').textContent = visibleMarkers.length;
         }
         
-        // Подсветка площадки
         function highlightVenue(venueId) {
-            // Снимаем подсветку со всех
             markers.forEach(item => {
                 const icon = item.marker.getIcon();
                 if (icon.options.html.includes('border: 3px solid yellow')) {
@@ -824,7 +771,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
             });
             
-            // Подсвечиваем выбранную
             const selected = markers.find(item => item.venue.id == venueId);
             if (selected) {
                 const icon = selected.marker.getIcon();
@@ -833,13 +779,10 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
         }
         
-        // Уведомления
         function showNotification(message, type = 'success') {
-            // Удаляем старое уведомление
             const old = document.querySelector('.notification');
             if (old) old.remove();
             
-            // Создаем новое
             const notification = document.createElement('div');
             notification.className = 'notification';
             notification.style.background = type === 'error' ? '#ffebee' : '#e8f5e9';
@@ -847,14 +790,13 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             notification.innerHTML = `
                 <span style="font-size: 1.2em;">
-                    ${type === 'error' ? '❌' : '✅'}
+                    ${type === 'error' ? 'X' : 'V'}
                 </span>
                 <span>${message}</span>
             `;
             
             document.body.appendChild(notification);
             
-            // Удаляем через 3 секунды
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.remove();
@@ -862,7 +804,6 @@ $venues = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }, 3000);
         }
         
-        // Инициализация при загрузке
         document.addEventListener('DOMContentLoaded', initMap);
     </script>
 </body>

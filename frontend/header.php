@@ -1,7 +1,4 @@
 <?php
-// header.php - Универсальная шапка для всех страниц
-
-// Проверяем, не начата ли уже сессия
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -14,7 +11,6 @@ if (session_status() === PHP_SESSION_NONE) {
     <title><?php echo isset($page_title) ? $page_title : 'Музыкальные площадки Москвы'; ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Стили шапки */
         * { 
             margin: 0; 
             padding: 0; 
@@ -37,7 +33,6 @@ if (session_status() === PHP_SESSION_NONE) {
             padding: 0 20px;
         }
         
-        /* Шапка */
         .header {
             background: linear-gradient(135deg, #2c3e50 0%, #4a6fa5 100%);
             color: white;
@@ -103,7 +98,6 @@ if (session_status() === PHP_SESSION_NONE) {
             color: #4a6fa5;
         }
         
-        /* Основной контент */
         main {
             padding: 60px 0;
             flex: 1;
@@ -142,7 +136,6 @@ if (session_status() === PHP_SESSION_NONE) {
                         <i class="fas fa-star"></i> Рекомендации
                     </a></li>
                     <?php if(isset($_SESSION['user_id'])): ?>
-            <!-- Ссылки для авторизованных пользователей -->
             <li><a href="my_bookings.php" <?php echo basename($_SERVER['PHP_SELF']) == 'my_bookings.php' ? 'class="active"' : ''; ?>>
                 <i class="fas fa-calendar-alt"></i> Бронирования
             </a></li>

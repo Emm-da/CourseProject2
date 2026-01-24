@@ -1,7 +1,6 @@
 <?php
-require_once 'header.php'; 
+require_once 'header.php';
 
-// Подключение к базе данных
 $host = 'localhost';
 $dbname = 'music_venues_db';
 $username = 'root';
@@ -14,12 +13,10 @@ try {
     die("Ошибка подключения к базе данных: " . $e->getMessage());
 }
 
-// Получаем параметры поиска
 $query = $_GET['query'] ?? '';
 $district = $_GET['district'] ?? '';
 $area = $_GET['area'] ?? '';
 
-// Строим SQL запрос
 $sql = "SELECT * FROM venues WHERE 1=1";
 $params = [];
 
@@ -44,21 +41,17 @@ if (!empty($area)) {
 
 $sql .= " ORDER BY name";
 
-// Выполняем запрос
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Получаем уникальные районы и округа для фильтров
 $districtsStmt = $pdo->query("SELECT DISTINCT district FROM venues WHERE district IS NOT NULL ORDER BY district");
 $districts = $districtsStmt->fetchAll(PDO::FETCH_COLUMN);
 
 $areasStmt = $pdo->query("SELECT DISTINCT adm_area FROM venues WHERE adm_area IS NOT NULL ORDER BY adm_area");
 $areas = $areasStmt->fetchAll(PDO::FETCH_COLUMN);
 ?>
-<!-- Стили только для страницы поиска -->
 <style>
-    /* Убираем глобальные стили, оставляем только для контента */
     .search-container { 
         max-width: 1200px; 
         margin: 20px auto; 
@@ -346,17 +339,14 @@ $areas = $areasStmt->fetchAll(PDO::FETCH_COLUMN);
 
 </head>
 <body>
-    <!-- Шапка уже подключена через header.php и будет синей -->
     
     <main>
         <div class="search-container">
-            <!-- Заголовок страницы поиска -->
             <div class="search-header">
                 <h1>🔍 Поиск музыкальных площадок</h1>
                 <p class="subtitle">Найдите площадки по названию, району, округу или адресу</p>
             </div>
             
-            <!-- Форма поиска -->
             <div class="search-box">
                 <form method="GET" action="">
                     <input type="text" name="query" class="search-input" 
@@ -369,7 +359,6 @@ $areas = $areasStmt->fetchAll(PDO::FETCH_COLUMN);
                 </form>
             </div>
             
-            <!-- Фильтры -->
             <div class="filters">
                 <form method="GET" action="" class="filters-form">
                     <input type="hidden" name="query" value="<?php echo htmlspecialchars($query); ?>">
@@ -407,7 +396,6 @@ $areas = $areasStmt->fetchAll(PDO::FETCH_COLUMN);
                 </form>
             </div>
             
-            <!-- Результаты -->
             <div class="results-count">
                 Найдено площадок: <span style="color: #4a6fa5;"><?php echo count($results); ?></span>
             </div>
