@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 $host = 'localhost';
 $dbname = 'music_venues_db';
