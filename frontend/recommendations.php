@@ -973,9 +973,6 @@ $monthRecommendations = [
                 <a href="search.php" class="nav-btn secondary">
                     🔍 Расширенный поиск
                 </a>
-                <a href="venue_detail.php?id=1" class="nav-btn">
-                    🏛️ Пример площадки
-                </a>
             </div>
         </div>
     </main>
