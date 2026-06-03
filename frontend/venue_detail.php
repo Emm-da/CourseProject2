@@ -446,10 +446,7 @@ if(!$venue) {
                 <span>Доступна для бронирования</span>
             </div>
             
-            <div class="description">
-                <h3>Описание площадки</h3>
-                <p><?php echo nl2br(htmlspecialchars($venue['description'] ?? 'Подробное описание площадки...')); ?></p>
-            </div>
+            
             
             <div class="features">
                 <h3>Характеристики</h3>
