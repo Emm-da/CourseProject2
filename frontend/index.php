@@ -219,11 +219,11 @@ try {
     }
     
     .action-btn.secondary {
-        background: #7f8c8d;
+        background: #4a6fa5;
     }
     
     .action-btn.secondary:hover {
-        background: #6c7b7d;
+        background: #4a6fa5;
     }
     
     .map-controls {
