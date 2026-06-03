@@ -77,6 +77,7 @@ if (session_status() === PHP_SESSION_NONE) {
         }
         
         .navbar a {
+            white-space: nowrap; 
             color: white;
             text-decoration: none;
             font-weight: 500;
@@ -89,13 +90,13 @@ if (session_status() === PHP_SESSION_NONE) {
         }
         
         .navbar a:hover {
-            color: #4a6fa5;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.15);
+            color: white;        
         }
         
         .navbar a.active {
-            background: rgba(255,255,255,0.15);
-            color: #4a6fa5;
+            background: rgba(0, 0, 0, 0.35);  
+            color: white;                     
         }
         
         main {
@@ -114,6 +115,19 @@ if (session_status() === PHP_SESSION_NONE) {
                 justify-content: center;
                 gap: 15px;
             }
+        }
+
+        .header {
+            z-index: 2000 !important;
+        }
+
+        .map-controls,
+        .map-legend,
+        .leaflet-control-container .leaflet-control,
+        .leaflet-popup,
+        .leaflet-top,
+        .leaflet-bottom {
+            z-index: 1500 !important;
         }
     </style>
 </head>
